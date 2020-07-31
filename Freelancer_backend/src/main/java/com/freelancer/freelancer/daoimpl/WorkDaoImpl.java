@@ -27,13 +27,12 @@ public class WorkDaoImpl implements WorkDao {
 
     @Override
     public List<Work> findByTitle(String title) {
-        List<Work> works =  workRepository.findByTitle(title);
+        List<Work> works = workRepository.findByTitle(title);
         for (Work work : works) {
             Optional<WorkEnclosure> workEnclosure = workEnclosureRepository.findById(work.getW_id());
             if (workEnclosure.isPresent()) {
                 work.setDescription(workEnclosure.get().getDescription());
-            }
-            else {
+            } else {
                 work.setDescription(null);
                 System.out.println("It's Null");
             }
@@ -47,8 +46,7 @@ public class WorkDaoImpl implements WorkDao {
         Optional<WorkEnclosure> workEnclosure = workEnclosureRepository.findById(wId);
         if (workEnclosure.isPresent()) {
             work.setDescription(workEnclosure.get().getDescription());
-        }
-        else {
+        } else {
             work.setDescription(null);
             System.out.println("It's Null" + wId);
         }
@@ -61,8 +59,7 @@ public class WorkDaoImpl implements WorkDao {
         Optional<WorkEnclosure> workEnclosure = workEnclosureRepository.findById(wId);
         if (workEnclosure.isPresent()) {
             work.setDescription(workEnclosure.get().getDescription());
-        }
-        else {
+        } else {
             work.setDescription(null);
             System.out.println("It's Null" + wId);
         }
@@ -71,8 +68,9 @@ public class WorkDaoImpl implements WorkDao {
 
     @Override
     public void save(Work work) {
-        WorkEnclosure workEnclosure = new WorkEnclosure(work.getW_id(), work.getDescription());
-        workRepository.save(work);
+
+        Work w = workRepository.save(work);
+        WorkEnclosure workEnclosure = new WorkEnclosure(w.getW_id(), w.getDescription());
         workEnclosureRepository.save(workEnclosure);
     }
 
@@ -83,8 +81,7 @@ public class WorkDaoImpl implements WorkDao {
             Optional<WorkEnclosure> workEnclosure = workEnclosureRepository.findById(work.getW_id());
             if (workEnclosure.isPresent()) {
                 work.setDescription(workEnclosure.get().getDescription());
-            }
-            else {
+            } else {
                 work.setDescription(null);
                 System.out.println("It's Null");
             }
@@ -93,14 +90,14 @@ public class WorkDaoImpl implements WorkDao {
     }
 
     @Override
-    public Page<Work> getPostedWorks(Integer uId, Pageable pageable, String keyword, Double paymentHigher, Double paymentLower) {
+    public Page<Work> getPostedWorks(Integer uId, Pageable pageable, String keyword, Double paymentHigher,
+            Double paymentLower) {
         Page<Work> postedWorks = workRepository.getPostedWorks(uId, keyword, paymentHigher, paymentLower, pageable);
         for (Work work : postedWorks) {
             Optional<WorkEnclosure> workEnclosure = workEnclosureRepository.findById(work.getW_id());
             if (workEnclosure.isPresent()) {
                 work.setDescription(workEnclosure.get().getDescription());
-            }
-            else {
+            } else {
                 work.setDescription(null);
                 System.out.println("It's Null");
             }

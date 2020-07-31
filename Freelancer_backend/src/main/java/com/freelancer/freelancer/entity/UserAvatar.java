@@ -3,24 +3,19 @@ package com.freelancer.freelancer.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Data;
+
+@Data
 @Document(collection = "useravatar")
 public class UserAvatar {
 
     @Id
-    private int u_id;
-    private String avator;
+    private int id;
+    private String avatar;
 
-    public UserAvatar(int u_id, String avator) {
-        this.u_id = u_id;
-        this.avator = avator;
-    }
-
-    public String getAvator() {
-        return avator;
-    }
-
-    public void setAvator(String avator) {
-        this.avator = avator;
+    public UserAvatar(int id, String avatar) {
+        this.id = id;
+        this.avatar = avatar;
     }
 
 }

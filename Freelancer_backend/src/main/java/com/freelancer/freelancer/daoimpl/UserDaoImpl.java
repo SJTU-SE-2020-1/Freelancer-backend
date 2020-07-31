@@ -44,7 +44,7 @@ public class UserDaoImpl implements UserDao {
         User user = userRepository.findByName(name);
         Optional<UserAvatar> userAvatar = userAvatarRepository.findById(user.getU_id());
         if (userAvatar.isPresent()) {
-            user.setAvatar(userAvatar.get().getAvator());
+            user.setAvatar(userAvatar.get().getAvatar());
         } else {
             user.setAvatar(null);
         }
@@ -56,7 +56,7 @@ public class UserDaoImpl implements UserDao {
         User user = userRepository.findById(uId).get();
         Optional<UserAvatar> userAvatar = userAvatarRepository.findById(user.getU_id());
         if (userAvatar.isPresent()) {
-            user.setAvatar(userAvatar.get().getAvator());
+            user.setAvatar(userAvatar.get().getAvatar());
         } else {
             user.setAvatar(null);
         }
