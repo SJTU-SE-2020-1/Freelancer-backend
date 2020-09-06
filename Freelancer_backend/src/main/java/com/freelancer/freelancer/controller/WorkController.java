@@ -94,8 +94,8 @@ public class WorkController {
         JSONArray unnecessarySkillJson = JSONArray.fromObject(unnecessarySkills);
 
         JSONObject data = new JSONObject();
-        data.putAll(workJson);
-        data.putAll(userJson);
+        data.put("work", workJson);
+        data.put("postman", userJson);
         data.put("necessarySkills", necessarySkillJson);
         data.put("unnecessarySkills", unnecessarySkillJson);
 
@@ -103,7 +103,7 @@ public class WorkController {
     }
 
     @RequestMapping("/postWork")
-    public void addProject(@RequestBody Map<String, String> params) {
+    public Boolean addProject(@RequestBody Map<String, String> params) {
         System.out.println(params.get("title"));
         String name = params.get("title");
         Double paymentLower = Double.parseDouble(params.get("paymentLower"));
@@ -112,6 +112,7 @@ public class WorkController {
         Timestamp biddingDdl = String2Date(params.get("biddingDdl"));
         Timestamp finishDdl = String2Date(params.get("finishDdl"));
         Integer UId = Integer.parseInt(params.get("uId"));
+        JSONArray skills = JSONArray.fromObject(params.get("needskills"));
 
         Work work = new Work();
         work.setTitle(name);
@@ -121,13 +122,25 @@ public class WorkController {
         work.setDescription(description);
         work.setBiddingDdl(biddingDdl);
         work.setFinishDdl(finishDdl);
-        workService.save(work);
+        work.setStatus(1);
+        Integer w_id = workService.save(work);
+        if (skills != null) {
+            List<NeedSkill> n_skills = new ArrayList<NeedSkill>();
+            for (int i = 0; i < skills.size(); i++) {
+                NeedSkill a_skill = new NeedSkill();
+                a_skill.setW_id(w_id);
+                a_skill.setS_id(skills.getJSONObject(i).getInt("s_id"));
+                n_skills.add(a_skill);
+            }
+            needSkillService.saveNeedSkill(n_skills);
+        }
+        return true;
     }
 
     // 0 latest, 1 earliest
     @RequestMapping("/getWorks")
     public List<Work> getWorks(@RequestBody Map<String, String> params) {
-        System.out.println("test");
+
         Integer PageNum = Integer.parseInt(params.get("pagenum"));
         Integer PageContentNum = Integer.parseInt(params.get("size"));
         String keyword = params.get("keyword");
@@ -225,18 +238,29 @@ public class WorkController {
         Integer status = params.get("status");
 
         JSONObject auth = SessionUtil.getAuth();
-        Integer u_id = Integer.parseInt(auth.getString(Constant.USER_ID));
+        Integer u_id = params.get(Constant.USER_ID);
+        String u_session_type = auth.getJSONArray("userType").getJSONObject(0).getString("authority");
+        if (u_session_type == null) {
+            return false;
+        }
+
+        if (u_session_type == "ROLE_ADMIN") {
+            u_id = -1;
+
+        }
+
         return workService.changeWorkStatus(u_id, w_id, status);
     }
 
     @RequestMapping("/applyWork")
-    public void applyWork(@RequestBody Map<String, String> params) {
+    public boolean applyWork(@RequestBody Map<String, String> params) {
         ProposeWork proposeWork = new ProposeWork();
         proposeWork.setUId(Integer.parseInt(params.get("u_id")));
         proposeWork.setWId(Integer.parseInt(params.get("w_id")));
         proposeWork.setExpectPayment(Double.parseDouble(params.get("expect_payment")));
         proposeWork.setRemark(params.get("remark"));
         proposeWorkService.addProposeWork(proposeWork);
+        return true;
     }
 
     @RequestMapping("/cancelApply")

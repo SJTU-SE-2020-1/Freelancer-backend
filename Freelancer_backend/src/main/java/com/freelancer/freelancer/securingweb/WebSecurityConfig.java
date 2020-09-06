@@ -27,6 +27,7 @@ public  class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .anyRequest().authenticated()
                 //这里必须要写formLogin()，不然原有的UsernamePasswordAuthenticationFilter不会出现，也就无法配置我们重新的UsernamePasswordAuthenticationFilter
                 .and().formLogin().loginPage("/login")
+                .and().logout().logoutUrl("logout")
                 .and().csrf().disable();
         //用重写的Filter替换掉原有的UsernamePasswordAuthenticationFilter
         http.addFilterAt(customAuthenticationFilter(),

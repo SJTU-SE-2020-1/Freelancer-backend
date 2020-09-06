@@ -7,6 +7,8 @@ import com.freelancer.freelancer.entity.WorkEnclosure;
 import com.freelancer.freelancer.repository.UserAvatarRepository;
 import com.freelancer.freelancer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -67,6 +69,11 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void save(User user) {
         userRepository.save(user);
+    }
+
+    @Override
+    public Page<User> getUsers(String keyword, Pageable pageable) {
+        return userRepository.getUsers(keyword, pageable);
     }
 
 }

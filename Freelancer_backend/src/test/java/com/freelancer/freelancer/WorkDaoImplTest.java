@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 * WorkDaoImpl Tester.
 *
 * @author <Authors name>
-* @since <pre>7ÔÂ 15, 2020</pre>
+* @since <pre>7æœˆ 15, 2020</pre>
 * @version 1.0
 */
 @RunWith(SpringRunner.class)

@@ -12,6 +12,8 @@ import com.freelancer.freelancer.utils.msgutils.MsgUtil;
 import com.freelancer.freelancer.utils.sessionutils.SessionUtil;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,7 +50,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Integer uId) {
         User user = userDao.findById(uId);
-        user.setPassword(null);
+        // user.setPassword(null);
         return user;
     }
 
@@ -85,6 +87,20 @@ public class UserServiceImpl implements UserService {
         user.setIs_banned(status);
         userDao.save(user);
         return true;
+    }
+
+    @Override
+    public boolean changeUserType(Integer u_id, Integer type) {
+        User user = userDao.findById(u_id);
+        System.out.println(user);
+        user.setType(type);
+        userDao.save(user);
+        return true;
+    }
+
+    @Override
+    public Page<User> getUsers(String keyword, Pageable pageable) {
+        return userDao.getUsers(keyword, pageable);
     }
 
 }

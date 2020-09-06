@@ -16,11 +16,15 @@ import net.sf.json.JSONObject;
 import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -113,16 +117,63 @@ public class UserController {
         Integer u_id = Integer.parseInt(params.get("u_id"));
         Integer status = Integer.parseInt(params.get("status"));
         JSONObject auth = SessionUtil.getAuth();
-        Integer u_id_session = Integer.parseInt(auth.getString(Constant.USER_ID));
-        User user = userService.findById(u_id_session);
-        if (user == null) {
+        String u_session_type = auth.getJSONArray("userType").getJSONObject(0).getString("authority");
+
+        if (u_session_type == null) {
             return false;
         }
         User user_ee = userService.findById(u_id);
-        if (user.getType() != 1 || user_ee.getType() == 1) {
+        if (u_session_type != "ROLE_ADMIN" || user_ee.getType() == 1) {
             return false;
         }
         return userService.changeUserStatus(u_id, status);
+    }
+
+    @RequestMapping("/changeUserType")
+    public boolean changeUserType(@RequestBody Map<String, String> params) {
+        Integer u_id = Integer.parseInt(params.get("u_id"));
+        Integer type = Integer.parseInt(params.get("type"));
+        JSONObject auth = SessionUtil.getAuth();
+        String u_session_type = auth.getJSONArray("userType").getJSONObject(0).getString("authority");
+
+        if (u_session_type == null) {
+            return false;
+        }
+        User user_ee = userService.findById(u_id);
+        if (u_session_type != "ROLE_ADMIN" || user_ee.getType() == 1) {
+            return false;
+        }
+        return userService.changeUserType(u_id, type);
+    }
+
+    @RequestMapping("/getUsers")
+    public List<User> getUsers(@RequestBody Map<String, String> params) {
+        Integer PageNum = Integer.parseInt(params.get("pagenum"));
+        Integer PageContentNum = Integer.parseInt(params.get("size"));
+        if (PageNum <= 0 || PageContentNum <= 0) {
+            PageNum = 1;
+            PageContentNum = 20;
+        }
+        String keyword = params.get("keyword");
+        if (keyword == null)
+            keyword = "";
+        String sort = params.get("sortby");
+        Integer sortby = sort != null ? Integer.parseInt(sort) : 0;
+        List<User> users;
+        if (sortby == 1) {
+            Pageable pageable = PageRequest.of(PageNum - 1, PageContentNum, Sort.by(Sort.Direction.ASC, "u_id"));
+            users = userService.getUsers(keyword, pageable).getContent();
+
+        } else {
+            Pageable pageable = PageRequest.of(PageNum - 1, PageContentNum, Sort.by(Sort.Direction.DESC, "u_id"));
+            users = userService.getUsers(keyword, pageable).getContent();
+        }
+        Iterator<User> it = users.iterator();
+        while (it.hasNext()) {
+            it.next().setPassword(null);
+        }
+        return users;
+
     }
 
 }

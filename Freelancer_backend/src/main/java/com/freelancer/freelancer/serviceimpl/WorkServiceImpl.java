@@ -34,8 +34,8 @@ public class WorkServiceImpl implements WorkService {
     }
 
     @Override
-    public void save(Work work) {
-        workDao.save(work);
+    public Integer save(Work work) {
+        return workDao.save(work);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class WorkServiceImpl implements WorkService {
     @Override
     public boolean changeWorkStatus(Integer u_id, Integer w_id, Integer status) {
         Work work = workDao.findByWId(w_id);
-        if (u_id != work.getU_id()) {
+        if (u_id != work.getU_id() && u_id > 0) {
             return false;
         } else {
             work.setStatus(status);

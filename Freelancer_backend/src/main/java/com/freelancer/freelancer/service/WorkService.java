@@ -1,5 +1,6 @@
 package com.freelancer.freelancer.service;
 
+import com.freelancer.freelancer.entity.NeedSkill;
 import com.freelancer.freelancer.entity.Work;
 import net.sf.json.JSONObject;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ public interface WorkService {
 
     Work findByDetails(Integer wId, String keyword, Double paymentHigher, Double paymentLower);
 
-    public void save(Work work);
+    public Integer save(Work work);
 
     Page<Work> getWorks(Pageable pageable, String keyword, Double paymentHigher, Double paymentLower);
 
@@ -23,4 +24,5 @@ public interface WorkService {
             Double paymentLower);
 
     boolean changeWorkStatus(Integer u_id, Integer w_id, Integer status);
+
 }

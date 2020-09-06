@@ -24,7 +24,7 @@ public class Work {
     private Double paymentHigher;
     private Timestamp biddingDdl;
     private Timestamp finishDdl;
-    private int status;
+    private int status = 1;
 
     @Transient
     private String description;

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Service
 public class NeedSkillServiceImpl implements NeedSkillService {
 
@@ -38,4 +37,8 @@ public class NeedSkillServiceImpl implements NeedSkillService {
         return needSkillList;
     }
 
+    @Override
+    public Boolean saveNeedSkill(List<NeedSkill> skills) {
+        return needSkillDao.saveNeedSkill(skills);
+    }
 }

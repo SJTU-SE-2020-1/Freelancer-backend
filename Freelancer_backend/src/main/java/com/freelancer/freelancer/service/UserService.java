@@ -5,6 +5,9 @@ import com.freelancer.freelancer.utils.msgutils.Msg;
 import com.freelancer.freelancer.utils.msgutils.MsgCode;
 import com.freelancer.freelancer.utils.msgutils.MsgUtil;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface UserService {
@@ -22,5 +25,9 @@ public interface UserService {
     Msg login(String name, String password);
 
     boolean changeUserStatus(Integer u_id, Integer status);
+
+    Page<User> getUsers(String keyword, Pageable pageable);
+
+    boolean changeUserType(Integer u_id, Integer type);
 
 }

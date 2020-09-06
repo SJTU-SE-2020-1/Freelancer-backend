@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @IdClass(NeedSkillPK.class)
 @Table(name = "needSkill")
-@JsonIgnoreProperties(value = {"handler","hibernateLazyInitializer","fieldHandler"})
+@JsonIgnoreProperties(value = { "handler", "hibernateLazyInitializer", "fieldHandler" })
 public class NeedSkill {
 
     @Id
@@ -20,6 +20,6 @@ public class NeedSkill {
     @Id
     private int s_id;
 
-    private int type;
+    private int type = 1;
 
 }

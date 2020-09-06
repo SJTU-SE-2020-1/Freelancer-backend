@@ -67,11 +67,12 @@ public class WorkDaoImpl implements WorkDao {
     }
 
     @Override
-    public void save(Work work) {
+    public Integer save(Work work) {
 
         Work w = workRepository.save(work);
         WorkEnclosure workEnclosure = new WorkEnclosure(w.getW_id(), w.getDescription());
         workEnclosureRepository.save(workEnclosure);
+        return w.getW_id();
     }
 
     @Override

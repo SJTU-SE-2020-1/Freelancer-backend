@@ -25,4 +25,12 @@ public class NeedSkillDaoImpl implements NeedSkillDao {
         return needSkillRepository.getSkillList(wId, 0);
     }
 
+    @Override
+    public Boolean saveNeedSkill(List<NeedSkill> skills) {
+        for (int i = 0; i < skills.size(); i++) {
+            needSkillRepository.save(skills.get(i));
+        }
+        return true;
+    }
+
 }
