@@ -93,7 +93,7 @@ public class WorkDaoImpl implements WorkDao {
     @Override
     public Page<Work> getPostedWorks(Integer uId, Pageable pageable, String keyword, Double paymentHigher,
             Double paymentLower) {
-        Page<Work> postedWorks = workRepository.getPostedWorks(uId, keyword, paymentHigher, paymentLower, pageable);
+        Page<Work> postedWorks = workRepository.getMyPosted(uId, keyword, paymentHigher, paymentLower, pageable);
         for (Work work : postedWorks) {
             Optional<WorkEnclosure> workEnclosure = workEnclosureRepository.findById(work.getW_id());
             if (workEnclosure.isPresent()) {
@@ -106,4 +106,19 @@ public class WorkDaoImpl implements WorkDao {
         return postedWorks;
     }
 
+    @Override
+    public Page<Work> getReleasedWorks(Integer uId, Pageable pageable, String keyword, Double paymentHigher,
+            Double paymentLower) {
+        Page<Work> releasedWorks = workRepository.getMyRelease(uId, keyword, paymentHigher, paymentLower, pageable);
+        for (Work work : releasedWorks) {
+            Optional<WorkEnclosure> workEnclosure = workEnclosureRepository.findById(work.getW_id());
+            if (workEnclosure.isPresent()) {
+                work.setDescription(workEnclosure.get().getDescription());
+            } else {
+                work.setDescription(null);
+                System.out.println("It's Null");
+            }
+        }
+        return releasedWorks;
+    }
 }

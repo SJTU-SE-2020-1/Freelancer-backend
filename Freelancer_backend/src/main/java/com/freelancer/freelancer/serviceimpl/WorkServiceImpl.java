@@ -60,4 +60,10 @@ public class WorkServiceImpl implements WorkService {
             return true;
         }
     }
+
+    @Override
+    public Page<Work> getReleasedWorks(Integer uId, Pageable pageable, String keyword, Double paymentHigher,
+            Double paymentLower) {
+        return workDao.getReleasedWorks(uId, pageable, keyword, paymentHigher, paymentLower);
+    }
 }

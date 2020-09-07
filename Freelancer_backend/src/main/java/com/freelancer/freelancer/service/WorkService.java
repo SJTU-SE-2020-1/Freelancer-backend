@@ -25,4 +25,7 @@ public interface WorkService {
 
     boolean changeWorkStatus(Integer u_id, Integer w_id, Integer status);
 
+    Page<Work> getReleasedWorks(Integer uId, Pageable pageable, String keyword, Double paymentHigher,
+            Double paymentLower);
+
 }

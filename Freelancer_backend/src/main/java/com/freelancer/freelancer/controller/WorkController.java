@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.rmi.server.UID;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -102,6 +103,30 @@ public class WorkController {
         return data;
     }
 
+    @RequestMapping("/FinishWork")
+    public boolean finishWork(@RequestBody Map<String, String> params) {
+        String name = params.get("name");
+        User do_man = userService.findByName(name);
+        if (do_man == null)
+            return false;
+        Integer u_id = do_man.getU_id();
+        Integer w_id = Integer.parseInt(params.get("w_id"));
+        Double payment = Double.parseDouble(params.get("payment"));
+        String review = params.get("review");
+        Timestamp start_time = String2Date(params.get("start_time"));
+        Timestamp end_time = String2Date(params.get("end_time"));
+        DoWork doWork = new DoWork();
+        doWork.setEndTime(end_time);
+        doWork.setPayment(payment);
+        doWork.setReview(review);
+        doWork.setStartTime(start_time);
+        doWork.setU_id(u_id);
+        doWork.setW_id(w_id);
+        doWorkService.save(doWork);
+        workService.changeWorkStatus(-1, w_id, 0);// 关闭申请通道
+        return true;
+    }
+
     @RequestMapping("/postWork")
     public Boolean addProject(@RequestBody Map<String, String> params) {
         System.out.println(params.get("title"));
@@ -167,6 +192,47 @@ public class WorkController {
         }
     }
 
+    @RequestMapping("/getMyRelease")
+    public JSONArray getMyRelease(@RequestBody Map<String, String> params) {
+
+        Integer PageNum = Integer.parseInt(params.get("pagenum"));
+        Integer PageContentNum = Integer.parseInt(params.get("size"));
+        Integer uId = Integer.parseInt(params.get("u_id"));
+        String keyword = params.get("keyword");
+        if (keyword == null)
+            keyword = "";
+        String sort = params.get("sortby");
+        Integer sortby = sort != null ? Integer.parseInt(sort) : 0;
+        String higher = params.get("paymentHigher");
+        String lower = params.get("paymentLower");
+        Double paymentHigher = higher != null ? Double.parseDouble(higher) : 10000;
+        Double paymentLower = lower != null ? Double.parseDouble(lower) : 0;
+
+        if (PageNum <= 0 || PageContentNum <= 0) {
+            PageNum = 1;
+            PageContentNum = 20;
+        }
+        Pageable pageable;
+        if (sortby == 1) {
+            pageable = PageRequest.of(PageNum - 1, PageContentNum, Sort.by(Sort.Direction.ASC, "w_id"));
+
+        } else {
+            pageable = PageRequest.of(PageNum - 1, PageContentNum, Sort.by(Sort.Direction.DESC, "w_id"));
+
+        }
+        List<Work> works = workService.getReleasedWorks(uId, pageable, keyword, paymentHigher, paymentLower)
+                .getContent();
+        JSONArray result = new JSONArray();
+        for (int i = 0; i < works.size(); i++) {
+            Work work = works.get(i);
+            JSONObject object = JSONObject.fromObject(work);
+            List<Map<String, Object>> postmans = userService.getPostedUser(work.getW_id());
+            object.put("postmans", postmans);
+            result.add(object);
+        }
+        return result;
+    }
+
     @RequestMapping("/getPostedWorks")
     public List<Work> getPostedWorks(@RequestBody Map<String, String> params) {
         Integer PageNum = Integer.parseInt(params.get("pagenum"));
@@ -185,12 +251,12 @@ public class WorkController {
         String lower = params.get("paymentLower");
         Double paymentHigher = higher != null ? Double.parseDouble(higher) : 10000;
         Double paymentLower = lower != null ? Double.parseDouble(lower) : 0;
-
+        Pageable pageable;
         if (sortby == 1) {
-            Pageable pageable = PageRequest.of(PageNum - 1, PageContentNum, Sort.by(Sort.Direction.ASC, "w_id"));
+            pageable = PageRequest.of(PageNum - 1, PageContentNum, Sort.by(Sort.Direction.ASC, "w_id"));
             return workService.getPostedWorks(uId, pageable, keyword, paymentHigher, paymentLower).getContent();
         } else {
-            Pageable pageable = PageRequest.of(PageNum - 1, PageContentNum, Sort.by(Sort.Direction.DESC, "w_id"));
+            pageable = PageRequest.of(PageNum - 1, PageContentNum, Sort.by(Sort.Direction.DESC, "w_id"));
             return workService.getPostedWorks(uId, pageable, keyword, paymentHigher, paymentLower).getContent();
         }
     }

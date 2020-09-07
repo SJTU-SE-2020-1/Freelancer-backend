@@ -5,6 +5,7 @@ import com.freelancer.freelancer.dao.AdministratorDao;
 import com.freelancer.freelancer.dao.UserDao;
 import com.freelancer.freelancer.entity.Administrator;
 import com.freelancer.freelancer.entity.User;
+import com.freelancer.freelancer.entity.UserAvatar;
 import com.freelancer.freelancer.service.UserService;
 import com.freelancer.freelancer.utils.msgutils.Msg;
 import com.freelancer.freelancer.utils.msgutils.MsgCode;
@@ -16,7 +17,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,8 +41,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(User newUser) {
-        userDao.addUser(newUser);
+    public User addUser(User newUser) {
+        return userDao.addUser(newUser);
     }
 
     @Override
@@ -101,6 +104,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> getUsers(String keyword, Pageable pageable) {
         return userDao.getUsers(keyword, pageable);
+    }
+
+    @Override
+    public List<Map<String, Object>> getPostedUser(Integer w_id) {
+        List<Map<String, Object>> users = userDao.getPostedUser(w_id);
+        Iterator<Map<String, Object>> it = users.iterator();
+        while (it.hasNext()) {
+            it.next().put("password", null);
+        }
+        return users;
+    }
+
+    @Override
+    public Boolean saveAvatar(UserAvatar avatar) {
+        return userDao.saveAvatar(avatar);
+    }
+
+    @Override
+    public User changeInfo(String name, String phone, String e_mail, Integer u_id) {
+        return userDao.changeInfo(name, phone, e_mail, u_id);
     }
 
 }

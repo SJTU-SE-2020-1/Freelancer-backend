@@ -18,6 +18,12 @@ public class DoWorkDaoImpl implements DoWorkDao {
     DoWorkRepository doWorkRepository;
 
     @Override
-    public Page<DoWork> getWorkerWorks(Integer uId, Pageable pageable) { return doWorkRepository.getWorkerWorks(uId, pageable); }
+    public Page<DoWork> getWorkerWorks(Integer uId, Pageable pageable) {
+        return doWorkRepository.getWorkerWorks(uId, pageable);
+    }
 
+    @Override
+    public DoWork save(DoWork doWork) {
+        return doWorkRepository.save(doWork);
+    }
 }

@@ -1,4 +1,5 @@
 package com.freelancer.freelancer.securingweb;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,32 +15,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public  class WebSecurityConfig extends WebSecurityConfigurerAdapter{
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomUserDetailService customUserDetailService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .cors().and()
-                .antMatcher("/**").authorizeRequests()
-                .antMatchers("/", "/login**").permitAll()
+        http.cors().and().antMatcher("/**").authorizeRequests()
+                .antMatchers("/", "/login**", "/register", "/applyWork", "/getWorks", "/getFinishedWorks").permitAll()
                 .anyRequest().authenticated()
-                //这里必须要写formLogin()，不然原有的UsernamePasswordAuthenticationFilter不会出现，也就无法配置我们重新的UsernamePasswordAuthenticationFilter
-                .and().formLogin().loginPage("/login")
-                .and().logout().logoutUrl("logout")
-                .and().csrf().disable();
-        //用重写的Filter替换掉原有的UsernamePasswordAuthenticationFilter
-        http.addFilterAt(customAuthenticationFilter(),
-                UsernamePasswordAuthenticationFilter.class);
+                // 这里必须要写formLogin()，不然原有的UsernamePasswordAuthenticationFilter不会出现，也就无法配置我们重新的UsernamePasswordAuthenticationFilter
+                .and().formLogin().loginPage("/login").and().logout().logoutUrl("logout").and().csrf().disable();
+        // 用重写的Filter替换掉原有的UsernamePasswordAuthenticationFilter
+        http.addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(customUserDetailService);
-//    }
+    // @Override
+    // protected void configure(AuthenticationManagerBuilder auth) throws Exception
+    // {
+    // auth.userDetailsService(customUserDetailService);
+    // }
 
-    //注册自定义的UsernamePasswordAuthenticationFilter
+    // 注册自定义的UsernamePasswordAuthenticationFilter
     @Bean
     CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
         CustomAuthenticationFilter filter = new CustomAuthenticationFilter();
@@ -47,13 +44,13 @@ public  class WebSecurityConfig extends WebSecurityConfigurerAdapter{
         filter.setAuthenticationFailureHandler(new AuthFailHandler());
         filter.setFilterProcessesUrl("/login");
 
-        //这句很关键，重用WebSecurityConfigurerAdapter配置的AuthenticationManager，不然要自己组装AuthenticationManager
+        // 这句很关键，重用WebSecurityConfigurerAdapter配置的AuthenticationManager，不然要自己组装AuthenticationManager
         filter.setAuthenticationManager(authenticationManagerBean());
         return filter;
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(){
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(customUserDetailService);
         authProvider.setPasswordEncoder(encoder());
@@ -61,11 +58,8 @@ public  class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     }
 
     @Bean
-    public PasswordEncoder encoder(){
-        //return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public PasswordEncoder encoder() {
+        // return PasswordEncoderFactories.createDelegatingPasswordEncoder();
         return new BCryptPasswordEncoder();
     }
 }
-
-
-

@@ -2,6 +2,7 @@ package com.freelancer.freelancer.controller;
 
 import com.freelancer.freelancer.constant.Constant;
 import com.freelancer.freelancer.entity.User;
+import com.freelancer.freelancer.entity.UserAvatar;
 import com.freelancer.freelancer.service.UserService;
 import com.freelancer.freelancer.entity.Administrator;
 import com.freelancer.freelancer.service.AdministratorService;
@@ -37,19 +38,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AdministratorService administratorService;
-
-    @RequestMapping("/logout")
-    public Msg logout() {
-        Boolean status = SessionUtil.removeSession();
-
-        if (status) {
-            return MsgUtil.makeMsg(MsgCode.SUCCESS, MsgUtil.LOGOUT_SUCCESS_MSG);
-        }
-        return MsgUtil.makeMsg(MsgCode.ERROR, MsgUtil.LOGOUT_ERR_MSG);
-    }
-
     @RequestMapping("/register")
     public Msg addUser(@RequestBody Map<String, String> params) {
         String name = params.get(Constant.NAME);
@@ -58,7 +46,6 @@ public class UserController {
         String email = params.get(Constant.EMAIL);
         String true_name = params.get(Constant.TRUE_NAME);
         String credit_card = params.get(Constant.CREDIT_CARD);
-        String type_s = params.get(Constant.TYPE);
 
         User newUser = new User();
         newUser.setName(name);
@@ -67,7 +54,7 @@ public class UserController {
         newUser.setE_mail(email);
         newUser.setTrue_name(true_name);
         newUser.setCredit_card(credit_card);
-        newUser.setType(Integer.parseInt(type_s));
+        newUser.setType(0);
 
         User duplicate = userService.checkDuplicate(name);
 
@@ -87,6 +74,16 @@ public class UserController {
             return MsgUtil.makeMsg(MsgCode.DUPLICATE_USER_ERROR);
         }
 
+    }
+
+    @RequestMapping("/logout")
+    public Msg logout() {
+        Boolean status = SessionUtil.removeSession();
+
+        if (status) {
+            return MsgUtil.makeMsg(MsgCode.SUCCESS, MsgUtil.LOGOUT_SUCCESS_MSG);
+        }
+        return MsgUtil.makeMsg(MsgCode.ERROR, MsgUtil.LOGOUT_ERR_MSG);
     }
 
     @RequestMapping("/checkSession")
@@ -174,6 +171,39 @@ public class UserController {
         }
         return users;
 
+    }
+
+    @RequestMapping("/getPostman")
+    public List<Map<String, Object>> getPostman(@RequestBody Map<String, String> params) {
+        System.out.println("get Post people");
+        Integer w_id = Integer.valueOf(params.get("w_id"));
+        return userService.getPostedUser(w_id);
+    }
+
+    @RequestMapping("/changeInfo")
+    public JSONObject changeInfo(@RequestBody Map<String, String> params) {
+        System.out.println("change info");
+        Integer u_id = Integer.valueOf(params.get("u_id"));
+        String name = params.get("name");
+        String e_mail = params.get("email");
+
+        String phone = params.get("phone");
+        User user = userService.changeInfo(name, phone, e_mail, u_id);
+        JSONObject userinfo = new JSONObject();
+        userinfo.put("name", user.getName());
+        userinfo.put("phone", user.getPhone());
+        userinfo.put("e_mail", user.getE_mail());
+
+        return userinfo;
+    }
+
+    @RequestMapping("/uploadAvatar")
+    public Boolean UpAvatar(@RequestBody Map<String, String> params) {
+        System.out.println("upload Avatar");
+        Integer u_id = Integer.valueOf(params.get("u_id"));
+        String avatar = params.get("avatar");
+        UserAvatar u_Avatar = new UserAvatar(u_id, avatar);
+        return userService.saveAvatar(u_Avatar);
     }
 
 }

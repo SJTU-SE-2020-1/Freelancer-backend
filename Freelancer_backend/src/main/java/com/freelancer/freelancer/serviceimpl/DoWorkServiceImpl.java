@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 public class DoWorkServiceImpl implements DoWorkService {
 
@@ -18,6 +17,12 @@ public class DoWorkServiceImpl implements DoWorkService {
     private DoWorkDao doWorkDao;
 
     @Override
-    public Page<DoWork> getWorkerWorks(Integer uId, Pageable pageable) { return doWorkDao.getWorkerWorks(uId, pageable); }
+    public Page<DoWork> getWorkerWorks(Integer uId, Pageable pageable) {
+        return doWorkDao.getWorkerWorks(uId, pageable);
+    }
 
+    @Override
+    public DoWork save(DoWork doWork) {
+        return doWorkDao.save(doWork);
+    }
 }

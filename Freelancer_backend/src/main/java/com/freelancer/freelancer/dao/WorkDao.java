@@ -20,4 +20,7 @@ public interface WorkDao {
     Page<Work> getPostedWorks(Integer uId, Pageable pageable, String keyword, Double paymentHigher,
             Double paymentLower);
 
+    Page<Work> getReleasedWorks(Integer uId, Pageable pageable, String keyword, Double paymentHigher,
+            Double paymentLower);
+
 }

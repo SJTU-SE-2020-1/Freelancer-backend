@@ -1,10 +1,13 @@
 package com.freelancer.freelancer.dao;
 
 import com.freelancer.freelancer.entity.User;
+import com.freelancer.freelancer.entity.UserAvatar;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserDao {
@@ -13,7 +16,7 @@ public interface UserDao {
 
     User checkDuplicate(String name);
 
-    void addUser(User newUser);
+    User addUser(User newUser);
 
     User findByName(String name);
 
@@ -22,5 +25,11 @@ public interface UserDao {
     void save(User user);
 
     Page<User> getUsers(String keyword, Pageable pageable);
+
+    Boolean saveAvatar(UserAvatar avatar);
+
+    User changeInfo(String name, String phone, String e_mail, Integer u_id);
+
+    List<Map<String, Object>> getPostedUser(Integer w_id);
 
 }
