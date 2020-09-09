@@ -22,7 +22,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().antMatcher("/**").authorizeRequests()
-                .antMatchers("/", "/login**", "/register", "/applyWork", "/getWorks", "/getFinishedWorks").permitAll()
+                .antMatchers("/", "/login**", "/register", "/applyWork", "/getWorks", "/getFinishedWorks","/getPostman").permitAll()
                 .anyRequest().authenticated()
                 // 这里必须要写formLogin()，不然原有的UsernamePasswordAuthenticationFilter不会出现，也就无法配置我们重新的UsernamePasswordAuthenticationFilter
                 .and().formLogin().loginPage("/login").and().logout().logoutUrl("logout").and().csrf().disable();
